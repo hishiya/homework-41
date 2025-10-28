@@ -1,18 +1,67 @@
-# React + Vite
+# React: Демонстрація хука `use()` та `Suspense`
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Це навчальний проєкт, створений на React + Vite, що демонструє використання експериментального хука `use()` для роботи з Promise та `Suspense` для обробки стану завантаження.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Опис завдання
 
-## React Compiler
+Мета проєкту — створити компонент, який отримує дані з Promise, переданого через props. Для читання даних з Promise використовується хук `use()`. Батьківський компонент `App` створює цей Promise, симулюючи асинхронний запит, та обгортає дочірній компонент у `Suspense` для відображення стану завантаження.
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+## Як це працює
 
-Note: This will impact Vite dev & build performances.
+1.  **`App.jsx` (Батьківський компонент):**
+    * Створюється функція `fetchMessage`, яка повертає `Promise`. Цей Promise вирішується (resolve) через 2 секунди, повертаючи рядок "Привіт, дані успішно отримано!".
+    * Promise `messagePromise` створюється негайно при завантаженні `App`.
+    * `App` рендерить компонент `Suspense` з `fallback` (запасним контентом) `<h2> Завантаження даних...</h2>`.
+    * Всередині `Suspense` рендериться `MessageComponent`, якому через props передається `messagePromise`.
 
-## Expanding the ESLint configuration
+2.  **`MessageComponent.jsx` (Дочірній компонент):**
+    * Компонент отримує `messagePromise` як prop.
+    * Використовується хук `use(messagePromise)`.
+    * **Ключовий момент:** Коли `use()` отримує Promise, який ще не виконано, він "повідомляє" про це найближчий `Suspense` компонент.
+    * `Suspense` "ловить" цей сигнал і показує свій `fallback` (у нашому випадку, "Завантаження даних...").
+    * Коли `Promise` (через 2 секунди) виконується, React повторно рендерить `MessageComponent`. Цього разу `use()` одразу отримує готові дані ("Привіт, дані успішно отримано!") і повертає їх.
+    * Компонент відображає `<h1>` з отриманим повідомленням.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Стек технологій
+
+* **React**
+* **Vite**
+* **React Hooks:** `use()`
+* **React Components:** `Suspense`
+
+---
+
+## Встановлення та запуск
+
+1.  **Клонуйте репозиторій:**
+    ```bash
+    # Замініть [URL] на посилання вашого репозиторію
+    git clone [URL-ВАШОГО-РЕПОЗИТОРІЮ]
+    ```
+
+2.  **Перейдіть до каталогу проєкту:**
+    ```bash
+    # Замініть 'my-react-app' на назву вашої папки, якщо вона інша
+    cd my-react-app
+    ```
+
+3.  **Встановіть залежності:**
+    ```bash
+    npm install
+    ```
+
+4.  **Запустіть проєкт у режимі розробки:**
+    ```bash
+    npm run dev
+    ```
+
+    Проєкт буде доступний за адресою `http://localhost:5173/` (або іншим портом, вказаним у терміналі).
+
+---
+
+## Демо-версія
+
+Ви можете переглянути живу (live) демо-версію проєкту, розгорнуту на Vercel 
+https://homework-41-rust.vercel.app/
